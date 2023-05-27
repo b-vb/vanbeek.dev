@@ -178,7 +178,9 @@ export default function Page() {
           </CardHeader>
           <CardContent>
             <ol>
-              {players.map((player) => (
+              {players.sort(
+                (a, b) => b.totalScore - a.totalScore
+              ).map((player) => (
                 <li className="row my-5 flex w-full max-w-sm items-center justify-between rounded-md bg-slate-100 pl-5">
                   <span>{player.name}</span>
                   <span>{player.totalScore}</span>
