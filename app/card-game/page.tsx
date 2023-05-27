@@ -138,17 +138,13 @@ export default function Page() {
                 <td>Nieuwe score: </td>
                 {players.map((player) => (
                   <td>
-                    <form onSubmit={(event) => onSubmit(event, player)}>
-                      <Input type="number" name="addedScore" />
-                      <Button>+</Button>
-                    </form>
                   </td>
                 ))}
               </tr>
               <tr>
                 <td>Stand</td>
                 {players.map((player) => (
-                  <td>{player.sum}</td>
+                  <td>{player.totalScore}</td>
                 ))}
               </tr>
             </tbody>
