@@ -1,7 +1,7 @@
 "use client"
 
 import { useMachine } from "@xstate/react"
-import { Gamepad2, XCircle } from "lucide-react"
+import { Gamepad2, Recycle, XCircle } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -13,38 +13,23 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
 import { Player, cardGameMachine } from "./machine"
 
-const defaultPlayers: Player[] = [
-  {
-    id: "3452",
-    name: "Marjo",
-    scores: [
-      { id: "235423145", score: 10 },
-      { id: "235423145", score: 10 },
-      { id: "235423145", score: 10 },
-    ],
-    totalScore: 30,
-  },
-  {
-    id: "3422",
-    name: "Bjorn",
-    scores: [
-      { id: "665544", score: 10 },
-      { id: "37895", score: 10 },
-      { id: "5273", score: 20 },
-    ],
-    totalScore: 40,
-  },
-]
-
 export default function Page() {
   const [state, send] = useMachine(cardGameMachine, {
-    context: { players: defaultPlayers, rounds: 3 },
+    context: { players: [], rounds: 3 },
   })
 
-  const { players, rounds } = state.context
+  const { players, rounds, activeRound } = state.context
 
   return (
     <>
@@ -106,7 +91,13 @@ export default function Page() {
               />
             </CardContent>
             <CardFooter>
-              <Button onClick={() => send("Start game")}>
+              <Button
+                onClick={() => {
+                  if (rounds > 0 && players.length > 0) {
+                    send("Start game")
+                  }
+                }}
+              >
                 <Gamepad2 className="mr-2 h-4 w-4" /> Start spel
               </Button>
             </CardFooter>
@@ -116,40 +107,94 @@ export default function Page() {
 
       {state.matches("Playing") && (
         <>
-          <table>
-            <thead>
-              <tr>
-                <td></td>
+          <div className="flex w-full justify-center font-extrabold mt-5">
+            <h1>Ronde {activeRound}</h1>
+          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Ronde</TableHead>
                 {players.map((player) => (
-                  <td>{player.name}</td>
+                  <TableHead key={player.id}>{player.name}</TableHead>
                 ))}
-              </tr>
-            </thead>
-            <tbody>
-              {players[0].scores.map((_, index) => (
-                <tr>
-                  <td>Score</td>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Array.from({ length: rounds }).map((_, index) => (
+                <TableRow>
+                  <TableCell>{index + 1}</TableCell>
                   {players.map((player) => (
-                    <td>{player.scores[index].score}</td>
+                    <TableCell key={player.id}>
+                      {player.scores[index]?.score}
+                    </TableCell>
                   ))}
-                </tr>
+                </TableRow>
               ))}
-              <tr>
-                <td>Nieuwe score: </td>
+              <TableRow>
+                <TableCell>Nieuw </TableCell>
                 {players.map((player) => (
-                  <td>
-                  </td>
+                  <TableCell key={player.id}>
+                    <form
+                      onSubmit={(event) => {
+                        event.preventDefault()
+                        // @ts-ignore
+                        const score = event.target.score.valueAsNumber
+                        console.log("score:", score)
+                        send({
+                          type: "Add player score",
+                          id: player.id,
+                          score: isNaN(score) ? 0 : score,
+                        })
+                        // @ts-ignore
+                        event.target.reset()
+                      }}
+                    >
+                      <Input type="number" name="score" />
+                    </form>
+                  </TableCell>
                 ))}
-              </tr>
-              <tr>
-                <td>Stand</td>
+              </TableRow>
+              <TableRow>
+                <TableCell>Totaal</TableCell>
                 {players.map((player) => (
-                  <td>{player.totalScore}</td>
+                  <TableCell key={player.id}>{player.totalScore}</TableCell>
                 ))}
-              </tr>
-            </tbody>
-          </table>
+              </TableRow>
+            </TableBody>
+          </Table>
+          <div className="flex w-full justify-center mt-5">
+            <Button onClick={() => send("Next round")}>
+              <Gamepad2 className="mr-2 h-4 w-4" /> Volgende ronde!
+            </Button>
+          </div>
         </>
+      )}
+
+      {state.matches("Showing results") && (
+        <Card className="m-5">
+          <CardHeader>
+            <CardTitle>Spel afgelopen!</CardTitle>
+            <CardDescription>Dit zijn de eindresultaten</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ol>
+              {players.map((player) => (
+                <li className="row my-5 flex w-full max-w-sm items-center justify-between rounded-md bg-slate-100 pl-5">
+                  <span>{player.name}</span>
+                  <span>{player.totalScore}</span>
+                </li>
+              ))}
+            </ol>
+          </CardContent>
+          <CardFooter className="flex space-x-2">
+            <Button onClick={() => send("Start new game")}>
+              <Gamepad2 className="mr-2 h-4 w-4" /> Nieuw spel
+            </Button>
+            <Button onClick={() => send("Restart game")}>
+              <Recycle className="mr-2 h-4 w-4" /> Nog een keer
+            </Button>
+          </CardFooter>
+        </Card>
       )}
     </>
   )

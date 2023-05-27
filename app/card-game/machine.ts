@@ -26,6 +26,7 @@ interface Schema {
   | { type: "Remove player", id: string }
   | { type: "Edit player", id: string, name: string }
   | { type: "Update rounds", rounds: number }
+  | { type: "Next round" }
 }
 
 
@@ -75,6 +76,9 @@ export const cardGameMachine = createMachine({
         },
         "Edit player score": {
           actions: "Edit score of player",
+        },
+        "Next round": {
+          actions: "Increment active round",
         },
       },
     },
@@ -129,7 +133,7 @@ export const cardGameMachine = createMachine({
               id: nanoid(),
               score: event.score
             }
-            return { ...player, scores: [...player.scores, newScore] }
+            return { ...player, scores: [...player.scores, newScore], totalScore: player.totalScore + event.score }
           }
           return player
         })
@@ -158,7 +162,7 @@ export const cardGameMachine = createMachine({
         const updatedPlayers = context.players.map(player => {
           if (player.id === event.id) {
             const updatedScores = player.scores.filter(score => score.id !== event.scoreId)
-            return { ...player, scores: updatedScores }
+            return { ...player, scores: updatedScores, totalScore: player.totalScore - event.score }
           }
           return player
         })
@@ -168,18 +172,25 @@ export const cardGameMachine = createMachine({
     "Clear all player scores": assign({
       players: (context) => {
         const updatedPlayers = context.players.map(player => {
-          return { ...player, scores: [] }
+          return { ...player, scores: [], totalScore: 0 }
         })
         return updatedPlayers
-      }
+      },
+      activeRound: 0
     }),
     "Reset game": assign({
       players: [],
       rounds: 0,
+      activeRound: 0
     }),
     "Update rounds": assign({
       rounds: (context, event) => {
         return event.rounds
+      }
+    }),
+    "Increment active round": assign({
+      activeRound: (context) => {
+        return context.activeRound + 1
       }
     }),
   },

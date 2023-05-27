@@ -22,6 +22,7 @@
 "Clear all player scores": "Restart game";
 "Edit player": "Edit player";
 "Edit score of player": "Edit player score";
+"Increment active round": "Next round";
 "Remove player": "Remove player";
 "Remove score of player": "Remove player score";
 "Reset game": "Start new game";
