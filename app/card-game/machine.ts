@@ -1,9 +1,9 @@
 import { assign, createMachine } from "xstate"
 import { nanoid } from 'nanoid'
 
-interface Score {
+export interface Score {
   id: string
-  score: number
+  value?: number
 }
 
 export interface Player {
@@ -14,19 +14,24 @@ export interface Player {
 }
 
 interface Schema {
-  context: { players: Player[]; activeRound: number, rounds: number },
+  context: {
+    players: Player[];
+    activeRound: number;
+    rounds?: number;
+    setRounds: boolean
+  },
   events:
   | { type: "Start game" }
+  | { type: "Toggle rounds" }
   | { type: "Start new game" }
   | { type: "Restart game" }
-  | { type: "Add player score", id: string, score: number }
   | { type: "Add player", name: string }
-  | { type: "Remove player score", id: string, scoreId: string, score: number }
-  | { type: "Edit player score", id: string, scoreId: string, score: number }
+  | { type: "Update player score", id: string, scoreId: string, score: number }
   | { type: "Remove player", id: string }
   | { type: "Edit player", id: string, name: string }
-  | { type: "Update rounds", rounds: number }
+  | { type: "Update rounds", rounds?: number }
   | { type: "Next round" }
+  | { type: "Finish game" }
 }
 
 
@@ -37,8 +42,9 @@ export const cardGameMachine = createMachine({
   schema: {} as Schema,
   context: {
     players: [],
-    activeRound: 0,
+    activeRound: 1,
     rounds: 0,
+    setRounds: false
   },
   predictableActionArguments: true,
   preserveActionOrder: true,
@@ -47,6 +53,7 @@ export const cardGameMachine = createMachine({
       on: {
         "Start game": {
           target: "Playing",
+          actions: "Add blank scores",
         },
         "Add player": {
           actions: "Add player",
@@ -60,26 +67,29 @@ export const cardGameMachine = createMachine({
         "Update rounds": {
           actions: "Update rounds",
         },
+        "Toggle rounds": {
+          actions: "Toggle rounds",
+        }
       },
     },
     Playing: {
       always: {
         target: "Showing results",
-        cond: "Game done",
+        cond: "Game over when set rounds are played"
       },
       on: {
-        "Add player score": {
-          actions: "Add score to player",
-        },
-        "Remove player score": {
-          actions: "Remove score of player",
-        },
-        "Edit player score": {
-          actions: "Edit score of player",
+        "Update player score": {
+          actions: [
+            "Edit score of player",
+            "Update player total score"
+          ],
         },
         "Next round": {
           actions: "Increment active round",
         },
+        "Finish game": {
+          target: "Showing results",
+        }
       },
     },
     "Showing results": {
@@ -97,6 +107,20 @@ export const cardGameMachine = createMachine({
   },
 }, {
   actions: {
+    "Add blank scores": assign({
+      players: (context) => {
+        const players = context.players.map(player => {
+          const scores = Array.from({ length: context.rounds || 0 }, () => {
+            return {
+              id: nanoid(),
+              value: undefined
+            }
+          })
+          return { ...player, scores }
+        })
+        return players
+      }
+    }),
     "Add player": assign({
       players: (context, event) => {
         const newPlayer = {
@@ -125,28 +149,13 @@ export const cardGameMachine = createMachine({
         return updatedPlayers
       }
     }),
-    "Add score to player": assign({
-      players: (context, event) => {
-        const updatedPlayers = context.players.map(player => {
-          if (player.id === event.id) {
-            const newScore = {
-              id: nanoid(),
-              score: event.score
-            }
-            return { ...player, scores: [...player.scores, newScore], totalScore: player.totalScore + event.score }
-          }
-          return player
-        })
-        return updatedPlayers
-      }
-    }),
     "Edit score of player": assign({
       players: (context, event) => {
         const updatedPlayers = context.players.map(player => {
           if (player.id === event.id) {
             const updatedScores = player.scores.map(score => {
               if (score.id === event.scoreId) {
-                return { ...score, score: event.score }
+                return { ...score, value: event.score }
               }
               return score
             })
@@ -157,14 +166,16 @@ export const cardGameMachine = createMachine({
         return updatedPlayers
       }
     }),
-    "Remove score of player": assign({
-      players: (context, event) => {
+    "Update player total score": assign({
+      players: (context) => {
         const updatedPlayers = context.players.map(player => {
-          if (player.id === event.id) {
-            const updatedScores = player.scores.filter(score => score.id !== event.scoreId)
-            return { ...player, scores: updatedScores, totalScore: player.totalScore - event.score }
-          }
-          return player
+          const totalScore = player.scores.reduce((acc, score) => {
+            if (score.value) {
+              return acc + score.value
+            }
+            return acc
+          }, 0)
+          return { ...player, totalScore }
         })
         return updatedPlayers
       }
@@ -184,7 +195,7 @@ export const cardGameMachine = createMachine({
       activeRound: 0
     }),
     "Update rounds": assign({
-      rounds: (context, event) => {
+      rounds: (_, event) => {
         return event.rounds
       }
     }),
@@ -193,12 +204,16 @@ export const cardGameMachine = createMachine({
         return context.activeRound + 1
       }
     }),
+    "Toggle rounds": assign({
+      setRounds: (context) => {
+        return !context.setRounds
+      }
+    })
   },
   guards: {
-    "Game done": (context) => {
-      const activeRound = context.activeRound
-      const rounds = context.rounds
-      return activeRound >= rounds
+    "Game over when set rounds are played": (context) => {
+      console.log('context:', context);
+      return context.activeRound === context.rounds
     }
   }
 });

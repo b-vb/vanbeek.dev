@@ -17,22 +17,23 @@
           services: never;
         };
         eventsCausingActions: {
-          "Add player": "Add player";
-"Add score to player": "Add player score";
+          "Add blank scores": "Start game";
+"Add player": "Add player";
 "Clear all player scores": "Restart game";
 "Edit player": "Edit player";
-"Edit score of player": "Edit player score";
+"Edit score of player": "Update player score";
 "Increment active round": "Next round";
 "Remove player": "Remove player";
-"Remove score of player": "Remove player score";
 "Reset game": "Start new game";
+"Toggle rounds": "Toggle rounds";
+"Update player total score": "Update player score";
 "Update rounds": "Update rounds";
         };
         eventsCausingDelays: {
 
         };
         eventsCausingGuards: {
-          "Game done": "";
+          "Game over when set rounds are played": "";
         };
         eventsCausingServices: {
 
