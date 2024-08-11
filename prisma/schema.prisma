@@ -1,0 +1,28 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+model User {
+  id           String        @id @default(uuid())
+  name         String        @unique
+  age          Int
+  height       Int
+  start_weight Float
+  measurements Measurement[]
+}
+
+model Measurement {
+  id       String   @id @default(uuid())
+  date     DateTime @default(now())
+  weight   Float
+  author   User     @relation(fields: [authorId], references: [id])
+  authorId String
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
