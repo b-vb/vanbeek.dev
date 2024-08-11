@@ -1,6 +1,6 @@
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import prisma from '@/prisma/db';
-import { cn, formatDate } from '@/lib/utils';
+import { cn, formatDate, getAvatarUrl } from '@/lib/utils';
 import {
   Card, CardContent, CardDescription, CardHeader, CardTitle,
 } from '@/components/ui/card';
@@ -66,12 +66,12 @@ export default async function Page() {
               {users.map((user) => {
                 const startWeight = user.start_weight;
                 const currentWeight = user.measurements[0]?.weight ?? startWeight;
-                const progress = Math.abs(currentWeight - startWeight);
+                const progress = Math.abs(currentWeight - startWeight).toFixed(2);
 
                 return (
                   <div key={user.id} className="bg-muted rounded-lg p-4 flex flex-col items-center min-h-48">
                     <Avatar className="w-28 h-28 mb-2">
-                      <AvatarImage src={`https://avatar.iran.liara.run/public?username=${user.name}`} alt="@username" />
+                      <AvatarImage src={getAvatarUrl(user.name)} alt="@username" />
                       <AvatarFallback>{user.name.slice(0, 2).toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <div className="text-card-foreground font-medium">{user.name}</div>
