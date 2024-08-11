@@ -47,7 +47,5 @@ export async function addMeasurement(prevState: FormState, formData: FormData) {
     },
   });
 
-  console.log('Measurement added:', { user, weight, date });
-
   redirect('/losers');
 }
