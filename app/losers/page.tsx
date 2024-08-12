@@ -27,27 +27,24 @@ export default async function Page() {
     },
   });
 
-  const startWeights: MeasurementChartPoint = {
-    date: new Date('2024-08-05'),
-    users: users.reduce((acc, user) => {
-      acc[user.name] = user.start_weight;
-      return acc;
-    }, {} as Record<string, number>),
-  };
+  const startWeights: MeasurementChartPoint = users.reduce((acc, user) => {
+    acc[user.name] = user.start_weight;
+    return acc;
+  }, { date: new Date('2024-08-05') } as MeasurementChartPoint);
 
   const chartData = measurements.reduce(
     (acc, measurement) => {
       const existing = acc.find((item) => formatDate(item.date) === formatDate(measurement.date));
       if (existing) {
-        existing.users[measurement.author.name] = measurement.weight;
+        existing[measurement.author.name] = measurement.weight;
       } else {
+        // @ts-expect-error
         acc.push({
           date: measurement.date,
-          users: {
-            [measurement.author.name]: measurement.weight,
-          },
+          [measurement.author.name]: measurement.weight,
         });
       }
+
       return acc;
     },
     [startWeights] as MeasurementChartPoint[],

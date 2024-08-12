@@ -1,20 +1,21 @@
 'use client';
 
 import {
-  CartesianGrid, Line, LineChart, XAxis,
+  CartesianGrid, Line, LineChart, XAxis, YAxis,
 } from 'recharts';
 
 import {
   Card,
   CardContent,
   CardDescription,
-  // CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
 import {
   ChartConfig,
   ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
@@ -22,20 +23,19 @@ import { formatDate } from '@/lib/utils';
 
 export type MeasurementChartPoint = {
   date: Date;
-  users: Record<string, number>;
-};
+} & Record<string, number>;
 
 type Props = {
   data: MeasurementChartPoint[];
 };
 
 export function ProgressChart({ data }: Props) {
-  const chartConfig = data.reduce((acc, { users }) => {
-    Object.keys(users).forEach((user, index) => {
-      if (!acc[user]) {
-        acc[user] = {
-          label: user.charAt(0).toUpperCase() + user.slice(1),
-          color: `hsl(var(--chart-${index + 1}))`,
+  const chartConfig = data.reduce((acc, curr) => {
+    Object.keys(curr).forEach((key, index) => {
+      if (key !== 'date') {
+        acc[key] = {
+          label: key,
+          color: `hsl(var(--chart-${index}))`,
         };
       }
     });
@@ -43,7 +43,7 @@ export function ProgressChart({ data }: Props) {
     return acc;
   }, {} as ChartConfig);
 
-  const lines = Object.keys(data[0].users);
+  const users = Object.keys(data[0]).filter((key) => key !== 'date');
 
   return (
     <Card>
@@ -69,13 +69,22 @@ export function ProgressChart({ data }: Props) {
               tickMargin={8}
               tickFormatter={(value: Date) => formatDate(value)}
             />
-            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-            {lines.map((line) => (
+            <YAxis
+              type="number"
+              axisLine={false}
+              tickLine={false}
+              tickMargin={8}
+              domain={['dataMin', 'dataMax']}
+              tickFormatter={(value: number) => `${value} kg`}
+            />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+            <ChartLegend content={<ChartLegendContent />} />
+            {users.map((user) => (
               <Line
-                key={line}
-                dataKey={`users.${line}`}
+                key={user}
+                dataKey={user}
                 type="monotone"
-                stroke={`var(--color-${line})`}
+                stroke={`var(--color-${user})`}
                 strokeWidth={2}
                 dot
               />
