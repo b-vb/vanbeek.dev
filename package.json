@@ -8,17 +8,16 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "typescript:check": "tsc --noEmit"
+    "typescript:check": "tsc --noEmit",
+    "check-all": "bun run knip && bun run typescript:check && bun run lint"
   },
   "dependencies": {
     "@prisma/client": "5.18.0",
     "@radix-ui/react-avatar": "^1.1.0",
     "@radix-ui/react-dialog": "^1.1.1",
-    "@radix-ui/react-label": "^2.1.0",
     "@radix-ui/react-popover": "^1.1.1",
     "@radix-ui/react-select": "^2.1.1",
     "@radix-ui/react-slot": "^1.1.0",
-    "@radix-ui/react-toast": "^1.2.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "knip": "^5.27.2",
