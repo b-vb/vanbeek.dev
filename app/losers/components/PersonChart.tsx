@@ -14,8 +14,6 @@ import {
 import {
   ChartConfig,
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
@@ -51,7 +49,9 @@ export function PersonChart({ user }: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Progress of Bjorn</CardTitle>
+        <CardTitle className="text-lg md:text-2xl">
+          {`Progress of ${user.name}`}
+        </CardTitle>
         <CardDescription>August - December 2024</CardDescription>
       </CardHeader>
       <CardContent>
@@ -59,36 +59,29 @@ export function PersonChart({ user }: Props) {
           <LineChart
             accessibilityLayer
             data={chartData}
-            margin={{
-              left: 18,
-              right: 18,
-            }}
           >
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="date"
               tickLine={false}
               axisLine={false}
-              tickMargin={8}
+              tickMargin={10}
               tickFormatter={(value: Date) => formatDate(value)}
             />
             <YAxis
-              type="number"
               axisLine={false}
               tickLine={false}
-              tickMargin={8}
+              tickMargin={10}
               domain={['dataMin', 'dataMax']}
               tickFormatter={(value: number) => `${value} kg`}
             />
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-            <ChartLegend content={<ChartLegendContent />} />
             <Line
               key={user.id}
               dataKey={user.name}
               type="monotone"
               stroke={`var(--color-${user.name})`}
               strokeWidth={2}
-              dot
             />
           </LineChart>
         </ChartContainer>

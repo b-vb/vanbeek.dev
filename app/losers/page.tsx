@@ -33,13 +33,15 @@ export default async function Page() {
         <PeopleSection users={users} />
 
         <Tabs defaultValue="overall">
-          <TabsList className="grid w-full grid-cols-7">
+          <TabsList className="flex flex-col h-auto">
             <TabsTrigger value="overall">Overall</TabsTrigger>
-            {users.map((user) => (
-              <TabsTrigger key={user.id} value={user.name}>
-                {user.name}
-              </TabsTrigger>
-            ))}
+            <div>
+              {users.map((user) => (
+                <TabsTrigger key={user.id} value={user.name}>
+                  {user.name.slice(0, 2)}
+                </TabsTrigger>
+              ))}
+            </div>
           </TabsList>
           <TabsContent value="overall">
             <OverallChart users={users} measurements={measurements} />
