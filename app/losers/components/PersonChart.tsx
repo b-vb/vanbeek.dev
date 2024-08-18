@@ -31,7 +31,7 @@ type Props = {
 export function PersonChart({ user }: Props) {
   const chartData = user.measurements.map((measurement) => ({
     date: measurement.date,
-    [user.name]: measurement.weight,
+    [user.name]: measurement.weight / 1000,
   }));
 
   chartData.unshift({
