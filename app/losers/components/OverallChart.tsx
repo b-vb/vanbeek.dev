@@ -41,12 +41,12 @@ export function OverallChart({ users, measurements }: Props) {
     (acc, measurement) => {
       const existing = acc.find((item) => formatDate(item.date) === formatDate(measurement.date));
       if (existing) {
-        existing[measurement.author.name] = measurement.weight;
+        existing[measurement.author.name] = measurement.weight / 1000;
       } else {
         // @ts-expect-error
         acc.push({
           date: measurement.date,
-          [measurement.author.name]: measurement.weight,
+          [measurement.author.name]: measurement.weight / 1000,
         });
       }
 

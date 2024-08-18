@@ -21,17 +21,17 @@ const getAvatarUrl = (name: string) => {
   }
 };
 
-const calculateBMI = (weight: number, height: number) => weight / (height / 100) ** 2;
+const calculateBMI = (weightInKG: number, height: number) => weightInKG / (height / 100) ** 2;
 
 type Props = {
   user: UserWithMeasurements;
 };
 
 export function Person({ user }: Props) {
-  const startWeight = user.start_weight;
-  const currentWeight = user.measurements[0]?.weight ?? startWeight;
-  const progress = Math.abs(currentWeight - startWeight).toFixed(2);
-  const bmi = calculateBMI(currentWeight, user.height);
+  const startWeightInGrams = user.start_weight * 1000;
+  const currentWeightInGrams = user.measurements[0]?.weight ?? startWeightInGrams;
+  const progressInKG = Math.abs(currentWeightInGrams - startWeightInGrams) / 1000;
+  const bmi = calculateBMI(currentWeightInGrams / 1000, user.height);
 
   return (
     <div key={user.id} className="bg-muted rounded-lg p-4 flex flex-col items-center min-h-48 gap-3">
@@ -49,13 +49,13 @@ export function Person({ user }: Props) {
           |
         </div>
         <div className={cn('font-semibold', {
-          'text-green-500': startWeight > currentWeight,
-          'text-red-500': startWeight < currentWeight,
-          'text-yellow-500': startWeight === currentWeight,
+          'text-green-500': startWeightInGrams > currentWeightInGrams,
+          'text-red-500': startWeightInGrams < currentWeightInGrams,
+          'text-yellow-500': startWeightInGrams === currentWeightInGrams,
         })}
         >
-          {startWeight > currentWeight ? '-' : '+'}
-          {progress}
+          {startWeightInGrams > currentWeightInGrams ? '-' : '+'}
+          {progressInKG}
           kg
         </div>
         <div>
