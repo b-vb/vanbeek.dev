@@ -59,7 +59,7 @@ export function OverallChart({ users, measurements }: Props) {
     Object.keys(curr).forEach((key, index) => {
       if (key !== 'date') {
         acc[key] = {
-          label: key,
+          label: key.slice(0, 2),
           color: `hsl(var(--chart-${index}))`,
         };
       }
@@ -71,7 +71,7 @@ export function OverallChart({ users, measurements }: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Progress so far</CardTitle>
+        <CardTitle className="text-lg md:text-2xl">Progress so far</CardTitle>
         <CardDescription>August - December 2024</CardDescription>
       </CardHeader>
       <CardContent>
@@ -79,24 +79,19 @@ export function OverallChart({ users, measurements }: Props) {
           <LineChart
             accessibilityLayer
             data={chartData}
-            margin={{
-              left: 18,
-              right: 18,
-            }}
           >
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="date"
               tickLine={false}
               axisLine={false}
-              tickMargin={8}
+              tickMargin={10}
               tickFormatter={(value: Date) => formatDate(value)}
             />
             <YAxis
-              type="number"
               axisLine={false}
               tickLine={false}
-              tickMargin={8}
+              tickMargin={20}
               domain={['dataMin', 'dataMax']}
               tickFormatter={(value: number) => `${value} kg`}
             />
@@ -109,7 +104,6 @@ export function OverallChart({ users, measurements }: Props) {
                 type="monotone"
                 stroke={`var(--color-${user.name})`}
                 strokeWidth={2}
-                dot
               />
             ))}
           </LineChart>
