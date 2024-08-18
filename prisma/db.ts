@@ -17,3 +17,9 @@ export type UserWithMeasurements = Prisma.UserGetPayload<{
     measurements: true;
   };
 }>;
+
+export type MeasurementWithAuthor = Prisma.MeasurementGetPayload<{
+  include: {
+    author: true
+  }
+}>;
