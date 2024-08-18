@@ -1,15 +1,18 @@
 import prisma from '@/prisma/db';
-import { formatDate } from '@/lib/utils';
-import { MeasurementChartPoint, ProgressChart } from './components/progress-chart';
+import {
+  Tabs, TabsContent, TabsList, TabsTrigger,
+} from '@/components/ui/tabs';
+import { OverallChart } from './components/OverallChart';
 import AddMeasurementDialog from './components/AddMeasurementDialog';
 import { PeopleSection } from './components/PeopleSection';
+import { PersonChart } from './components/PersonChart';
 
 export default async function Page() {
   const users = await prisma.user.findMany({
     include: {
       measurements: {
         orderBy: {
-          date: 'desc',
+          date: 'asc',
         },
       },
     },
@@ -24,34 +27,30 @@ export default async function Page() {
     },
   });
 
-  const startWeights: MeasurementChartPoint = users.reduce((acc, user) => {
-    acc[user.name] = user.start_weight;
-    return acc;
-  }, { date: new Date('2024-08-05') } as MeasurementChartPoint);
-
-  const chartData = measurements.reduce(
-    (acc, measurement) => {
-      const existing = acc.find((item) => formatDate(item.date) === formatDate(measurement.date));
-      if (existing) {
-        existing[measurement.author.name] = measurement.weight;
-      } else {
-        // @ts-expect-error
-        acc.push({
-          date: measurement.date,
-          [measurement.author.name]: measurement.weight,
-        });
-      }
-
-      return acc;
-    },
-    [startWeights] as MeasurementChartPoint[],
-  );
-
   return (
     <div className="w-full max-w-4xl mx-auto">
       <div className="flex flex-col gap-6">
         <PeopleSection users={users} />
-        <ProgressChart data={chartData} />
+
+        <Tabs defaultValue="overall">
+          <TabsList className="grid w-full grid-cols-7">
+            <TabsTrigger value="overall">Overall</TabsTrigger>
+            {users.map((user) => (
+              <TabsTrigger key={user.id} value={user.name}>
+                {user.name}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          <TabsContent value="overall">
+            <OverallChart users={users} measurements={measurements} />
+          </TabsContent>
+          {users.map((user) => (
+            <TabsContent key={user.id} value={user.name}>
+              <PersonChart user={user} />
+            </TabsContent>
+          ))}
+        </Tabs>
+
         <AddMeasurementDialog users={users} />
       </div>
     </div>

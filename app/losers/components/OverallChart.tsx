@@ -20,17 +20,42 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 import { formatDate } from '@/lib/utils';
+import { MeasurementWithAuthor, UserWithMeasurements } from '@/prisma/db';
 
 export type MeasurementChartPoint = {
   date: Date;
 } & Record<string, number>;
 
 type Props = {
-  data: MeasurementChartPoint[];
+  users: UserWithMeasurements[];
+  measurements: MeasurementWithAuthor[];
 };
 
-export function ProgressChart({ data }: Props) {
-  const chartConfig = data.reduce((acc, curr) => {
+export function OverallChart({ users, measurements }: Props) {
+  const startWeights: MeasurementChartPoint = users.reduce((acc, user) => {
+    acc[user.name] = user.start_weight;
+    return acc;
+  }, { date: new Date('2024-08-05') } as MeasurementChartPoint);
+
+  const chartData = measurements.reduce(
+    (acc, measurement) => {
+      const existing = acc.find((item) => formatDate(item.date) === formatDate(measurement.date));
+      if (existing) {
+        existing[measurement.author.name] = measurement.weight;
+      } else {
+        // @ts-expect-error
+        acc.push({
+          date: measurement.date,
+          [measurement.author.name]: measurement.weight,
+        });
+      }
+
+      return acc;
+    },
+    [startWeights] as MeasurementChartPoint[],
+  );
+
+  const chartConfig = chartData.reduce((acc, curr) => {
     Object.keys(curr).forEach((key, index) => {
       if (key !== 'date') {
         acc[key] = {
@@ -43,8 +68,6 @@ export function ProgressChart({ data }: Props) {
     return acc;
   }, {} as ChartConfig);
 
-  const users = Object.keys(data[0]).filter((key) => key !== 'date');
-
   return (
     <Card>
       <CardHeader>
@@ -55,7 +78,7 @@ export function ProgressChart({ data }: Props) {
         <ChartContainer config={chartConfig}>
           <LineChart
             accessibilityLayer
-            data={data}
+            data={chartData}
             margin={{
               left: 18,
               right: 18,
@@ -81,10 +104,10 @@ export function ProgressChart({ data }: Props) {
             <ChartLegend content={<ChartLegendContent />} />
             {users.map((user) => (
               <Line
-                key={user}
-                dataKey={user}
+                key={user.id}
+                dataKey={user.name}
                 type="monotone"
-                stroke={`var(--color-${user})`}
+                stroke={`var(--color-${user.name})`}
                 strokeWidth={2}
                 dot
               />
