@@ -28,10 +28,14 @@ type Props = {
 };
 
 export function Person({ user }: Props) {
-  const startWeightInGrams = user.start_weight * 1000;
-  const currentWeightInGrams = user.measurements[0]?.weight ?? startWeightInGrams;
-  const progressInKG = Math.abs(currentWeightInGrams - startWeightInGrams) / 1000;
-  const bmi = calculateBMI(currentWeightInGrams / 1000, user.height);
+  const { measurements } = user;
+  const currentWeight = measurements[measurements.length - 1].weight;
+  const previousWeight = measurements[measurements.length - 2].weight;
+  const startWeight = measurements[0].weight;
+  const weekProgress = Math.abs(currentWeight - previousWeight);
+  const overallProgress = Math.abs(currentWeight - startWeight);
+
+  const bmi = calculateBMI(overallProgress / 1000, user.height);
 
   return (
     <div key={user.id} className="bg-muted rounded-lg p-4 flex flex-col items-center min-h-48 gap-3">
@@ -48,23 +52,31 @@ export function Person({ user }: Props) {
         <div>
           |
         </div>
-        <div className={cn('font-semibold', {
-          'text-green-500': startWeightInGrams > currentWeightInGrams,
-          'text-red-500': startWeightInGrams < currentWeightInGrams,
-          'text-yellow-500': startWeightInGrams === currentWeightInGrams,
+        <div>
+          BMI
+          {' '}
+          {bmi.toFixed(1)}
+        </div>
+      </div>
+      <div className="flex gap-2 text-sm">
+        <div className={cn({
+          'text-green-600': currentWeight < previousWeight,
+          'text-red-600': currentWeight > previousWeight,
+          'text-yellow-600': currentWeight === previousWeight,
         })}
         >
-          {startWeightInGrams > currentWeightInGrams ? '-' : '+'}
-          {progressInKG}
-          kg
+          {`week:  ${previousWeight > currentWeight ? '-' : '+'}${weekProgress / 1000}kg`}
         </div>
-        <div>
+        <div className="text-slate-400">
           |
         </div>
-        <div>
-          BMI:
-          {' '}
-          {bmi.toFixed(2)}
+        <div className={cn({
+          'text-green-600': currentWeight < startWeight,
+          'text-red-600': currentWeight > startWeight,
+          'text-yellow-600': startWeight === currentWeight,
+        })}
+        >
+          {`all:  ${startWeight > currentWeight ? '-' : '+'}${overallProgress / 1000}kg`}
         </div>
       </div>
     </div>

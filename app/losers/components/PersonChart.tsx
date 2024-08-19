@@ -34,11 +34,6 @@ export function PersonChart({ user }: Props) {
     [user.name]: measurement.weight / 1000,
   }));
 
-  chartData.unshift({
-    date: new Date('2024-08-05'),
-    [user.name]: user.start_weight,
-  });
-
   const chartConfig: ChartConfig = {
     [user.name]: {
       label: user.name,

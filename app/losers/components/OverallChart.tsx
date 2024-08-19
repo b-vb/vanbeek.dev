@@ -32,11 +32,6 @@ type Props = {
 };
 
 export function OverallChart({ users, measurements }: Props) {
-  const startWeights: MeasurementChartPoint = users.reduce((acc, user) => {
-    acc[user.name] = user.start_weight;
-    return acc;
-  }, { date: new Date('2024-08-05') } as MeasurementChartPoint);
-
   const chartData = measurements.reduce(
     (acc, measurement) => {
       const existing = acc.find((item) => formatDate(item.date) === formatDate(measurement.date));
@@ -52,7 +47,7 @@ export function OverallChart({ users, measurements }: Props) {
 
       return acc;
     },
-    [startWeights] as MeasurementChartPoint[],
+    [] as MeasurementChartPoint[],
   );
 
   const chartConfig = chartData.reduce((acc, curr) => {

@@ -16,6 +16,9 @@ export default async function Page() {
         },
       },
     },
+    orderBy: {
+      name: 'asc',
+    },
   });
 
   const measurements = await prisma.measurement.findMany({
