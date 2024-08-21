@@ -2,10 +2,11 @@ import prisma from '@/prisma/db';
 import {
   Tabs, TabsContent, TabsList, TabsTrigger,
 } from '@/components/ui/tabs';
-import { OverallChart } from './components/OverallChart';
 import AddMeasurementDialog from './components/AddMeasurementDialog';
 import { PeopleSection } from './components/PeopleSection';
-import { PersonChart } from './components/PersonChart';
+import { OverallChart } from './components/charts/OverallChart';
+import { PersonChart } from './components/charts/PersonChart';
+import { OverallRelativeChart } from './components/charts/OverallRelativeChart';
 
 export default async function Page() {
   const users = await prisma.user.findMany({
@@ -37,7 +38,10 @@ export default async function Page() {
 
         <Tabs defaultValue="overall">
           <TabsList className="flex flex-col h-auto">
-            <TabsTrigger value="overall">Overall</TabsTrigger>
+            <div>
+              <TabsTrigger value="overall">Overall</TabsTrigger>
+              <TabsTrigger value="overall-relative">Relative</TabsTrigger>
+            </div>
             <div>
               {users.map((user) => (
                 <TabsTrigger key={user.id} value={user.name}>
@@ -48,6 +52,9 @@ export default async function Page() {
           </TabsList>
           <TabsContent value="overall">
             <OverallChart users={users} measurements={measurements} />
+          </TabsContent>
+          <TabsContent value="overall-relative">
+            <OverallRelativeChart users={users} measurements={measurements} />
           </TabsContent>
           {users.map((user) => (
             <TabsContent key={user.id} value={user.name}>
