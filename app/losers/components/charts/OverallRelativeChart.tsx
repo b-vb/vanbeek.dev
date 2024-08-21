@@ -19,29 +19,30 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { formatDate } from '@/lib/utils';
+import { formatDate, MeasurementChartPoint, percentageToGoal } from '@/lib/utils';
 import { MeasurementWithAuthor, UserWithMeasurements } from '@/prisma/db';
-
-export type MeasurementChartPoint = {
-  date: Date;
-} & Record<string, number>;
 
 type Props = {
   users: UserWithMeasurements[];
   measurements: MeasurementWithAuthor[];
 };
 
-export function OverallChart({ users, measurements }: Props) {
+export function OverallRelativeChart({ users, measurements }: Props) {
   const chartData = measurements.reduce(
     (acc, measurement) => {
+      const user = users.find((u) => u.id === measurement.author.id);
+      if (!user) {
+        return acc;
+      }
+
       const existing = acc.find((item) => formatDate(item.date) === formatDate(measurement.date));
       if (existing) {
-        existing[measurement.author.name] = measurement.weight / 1000;
+        existing[measurement.author.name] = percentageToGoal(measurement, user);
       } else {
         // @ts-expect-error
         acc.push({
           date: measurement.date,
-          [measurement.author.name]: measurement.weight / 1000,
+          [measurement.author.name]: percentageToGoal(measurement, user),
         });
       }
 
@@ -66,8 +67,8 @@ export function OverallChart({ users, measurements }: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg md:text-2xl">Progress so far</CardTitle>
-        <CardDescription>August - December 2024</CardDescription>
+        <CardTitle className="text-lg md:text-2xl">Relative progress</CardTitle>
+        <CardDescription>Horserace 🏇🏼</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -81,14 +82,13 @@ export function OverallChart({ users, measurements }: Props) {
               tickLine={false}
               axisLine={false}
               tickMargin={10}
-              tickFormatter={(value: Date) => formatDate(value)}
+              tickFormatter={(value: Date) => formatDate(value, navigator.language)}
             />
             <YAxis
               axisLine={false}
               tickLine={false}
               tickMargin={20}
-              domain={['dataMin', 'dataMax']}
-              tickFormatter={(value: number) => `${value} kg`}
+              tickFormatter={(value: number) => `${value} %`}
             />
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
             <ChartLegend content={<ChartLegendContent />} />
