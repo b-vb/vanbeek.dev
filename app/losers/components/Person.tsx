@@ -35,7 +35,7 @@ export function Person({ user }: Props) {
   const weekProgress = Math.abs(currentWeight - previousWeight);
   const overallProgress = Math.abs(currentWeight - startWeight);
 
-  const bmi = calculateBMI(overallProgress / 1000, user.height);
+  const bmi = calculateBMI(currentWeight / 1000, user.height);
 
   return (
     <div key={user.id} className="bg-muted rounded-lg p-4 flex flex-col items-center min-h-48 gap-3">
