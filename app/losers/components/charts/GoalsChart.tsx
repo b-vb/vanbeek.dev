@@ -27,7 +27,7 @@ type Props = {
   measurements: MeasurementWithAuthor[];
 };
 
-export function OverallRelativeChart({ users, measurements }: Props) {
+export function GoalsChart({ users, measurements }: Props) {
   const chartData = measurements.reduce(
     (acc, measurement) => {
       const user = users.find((u) => u.id === measurement.author.id);
@@ -67,8 +67,8 @@ export function OverallRelativeChart({ users, measurements }: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg md:text-2xl">Relative progress</CardTitle>
-        <CardDescription>Horserace 🏇🏼</CardDescription>
+        <CardTitle className="text-lg md:text-2xl">Goals over time</CardTitle>
+        <CardDescription>How far is everyone towards their goal</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
