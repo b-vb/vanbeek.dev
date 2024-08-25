@@ -40,10 +40,10 @@ export function HorseRaceChart({ users }: Props) {
 
   chartData.sort((a, b) => b.loss - a.loss);
 
-  const dynamicConfig = chartData.reduce((acc, curr, index) => {
-    acc[curr.name] = {
-      label: curr.name,
-      color: `hsl(var(--chart-${index + 1}))`,
+  const dynamicConfig = chartData.reduce((acc, user) => {
+    acc[user.name] = {
+      label: user.name,
+      color: `hsl(var(--color-${user.name.toLowerCase()}))`,
     };
 
     return acc;
@@ -52,8 +52,8 @@ export function HorseRaceChart({ users }: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg md:text-2xl">Horse race!</CardTitle>
-        <CardDescription>Who lost the most so far?!</CardDescription>
+        <CardTitle className="text-lg md:text-2xl">Horse race 🏇🏼</CardTitle>
+        <CardDescription>Who lost the most so far?</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={dynamicConfig}>
@@ -85,7 +85,11 @@ export function HorseRaceChart({ users }: Props) {
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Bar dataKey="loss" layout="vertical" radius={5} />
+            <Bar
+              dataKey="loss"
+              layout="vertical"
+              radius={5}
+            />
           </BarChart>
         </ChartContainer>
       </CardContent>
