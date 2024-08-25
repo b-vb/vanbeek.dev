@@ -9,6 +9,8 @@ import { PersonChart } from './components/charts/PersonChart';
 import { GoalsChart } from './components/charts/GoalsChart';
 import { HorseRaceChart } from './components/charts/HorseRaceChart';
 
+export const revalidate = 3600; // revalidate at most every hour
+
 export default async function Page() {
   const users = await prisma.user.findMany({
     include: {

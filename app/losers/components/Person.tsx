@@ -1,6 +1,14 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { cn } from '@/lib/utils';
+import {
+  Card, CardContent, CardHeader, CardTitle,
+} from '@/components/ui/card';
+import {
+  ArrowDownIcon, ArrowUpIcon, Target, Calendar, Scale,
+} from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
 import { UserWithMeasurements } from '@/prisma/db';
+import { formatDate, targetWeightForDate } from '@/lib/utils';
+import Image from 'next/image';
 
 const getAvatarUrl = (name: string) => {
   switch (name.toLowerCase()) {
@@ -29,56 +37,87 @@ type Props = {
 
 export function Person({ user }: Props) {
   const { measurements } = user;
+  const goalWeight = user.goal_weight;
   const currentWeight = measurements[measurements.length - 1].weight;
   const previousWeight = measurements[measurements.length - 2].weight;
   const startWeight = measurements[0].weight;
-  const weekProgress = Math.abs(currentWeight - previousWeight);
-  const overallProgress = Math.abs(currentWeight - startWeight);
-
+  const weekLoss = Math.abs(currentWeight - previousWeight);
+  const currentLoss = Math.abs(currentWeight - startWeight);
+  const goalLoss = Math.abs(startWeight - goalWeight);
   const bmi = calculateBMI(currentWeight / 1000, user.height);
+  const progressPercentage = (currentLoss / goalLoss) * 100;
+  const targetWeight = targetWeightForDate(user, measurements[measurements.length - 1].date) / 1000;
+  const isOnTrack = currentWeight <= startWeight;
+  const isOnTrackThisWeek = (currentWeight / 1000) <= targetWeight;
+  const remainingWeight = Math.max(0, currentWeight - goalWeight);
 
+  const avatarUrl = getAvatarUrl(user.name);
   return (
-    <div key={user.id} className="bg-muted rounded-lg p-4 flex flex-col items-center min-h-48 gap-3">
-      <Avatar className="w-28 h-28">
-        <AvatarImage src={getAvatarUrl(user.name)} alt="@username" />
-        <AvatarFallback>{user.name.slice(0, 2).toUpperCase()}</AvatarFallback>
-      </Avatar>
-      <div className="font-medium">{user.name}</div>
-      <div className="flex gap-2 text-sm">
+    <Card className="w-full max-w-md">
+      <CardHeader className="flex flex-row items-center gap-4">
+        <Image width={64} height={64} src={avatarUrl} alt="" className="rounded-full w-16 h-16" />
         <div>
-          {user.height}
-          cm
+          <CardTitle>{user.name}</CardTitle>
+          <p className="text-sm text-muted-foreground">
+            {`${user.height} cm | BMI ${bmi.toFixed(1)}`}
+          </p>
         </div>
-        <div>
-          |
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <Scale className="w-4 h-4 text-muted-foreground" />
+            <span className="font-semibold">
+              {`${currentWeight / 1000} kg`}
+            </span>
+          </div>
+          <Badge variant={isOnTrackThisWeek ? 'default' : 'destructive'}>
+            {isOnTrackThisWeek ? 'On Track' : 'Needs Push'}
+          </Badge>
         </div>
-        <div>
-          BMI
-          {' '}
-          {bmi.toFixed(1)}
+
+        <div className="space-y-2">
+          <div className="flex justify-between text-sm">
+            <span>Progress to Goal</span>
+            <span>
+              {`${(remainingWeight / 1000).toFixed(1)} kg to go`}
+            </span>
+          </div>
+          <Progress value={progressPercentage} className="h-2" />
         </div>
-      </div>
-      <div className="flex gap-2 text-sm">
-        <div className={cn({
-          'text-green-600': currentWeight < previousWeight,
-          'text-red-600': currentWeight > previousWeight,
-          'text-yellow-600': currentWeight === previousWeight,
-        })}
-        >
-          {`week:  ${previousWeight > currentWeight ? '-' : '+'}${weekProgress / 1000}kg`}
+
+        <div className="flex justify-between text-sm">
+          <div className="flex items-center gap-2">
+            <Target className="w-4 h-4 text-muted-foreground" />
+            <span>
+              {`Goal: ${goalWeight / 1000} kg`}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-muted-foreground" />
+            <span>
+              {`By: ${formatDate(user.goal_date)}`}
+            </span>
+          </div>
         </div>
-        <div className="text-slate-400">
-          |
+
+        <div className="flex justify-between text-sm">
+          <div className="flex items-center gap-1">
+            <span className="font-medium">Week:</span>
+            <span className={isOnTrackThisWeek ? 'text-green-500' : 'text-red-500'}>
+              {isOnTrackThisWeek ? <ArrowDownIcon className="inline w-4 h-4" /> : <ArrowUpIcon className="inline w-4 h-4" /> }
+              {`${Math.abs(weekLoss / 1000)} kg`}
+            </span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="font-medium">Total:</span>
+            <span className={isOnTrack ? 'text-green-500' : 'text-red-500'}>
+              {isOnTrack ? <ArrowDownIcon className="inline w-4 h-4" /> : <ArrowUpIcon className="inline w-4 h-4" /> }
+              {`${Math.abs(currentLoss / 1000)} kg`}
+            </span>
+          </div>
         </div>
-        <div className={cn({
-          'text-green-600': currentWeight < startWeight,
-          'text-red-600': currentWeight > startWeight,
-          'text-yellow-600': startWeight === currentWeight,
-        })}
-        >
-          {`all:  ${startWeight > currentWeight ? '-' : '+'}${overallProgress / 1000}kg`}
-        </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
