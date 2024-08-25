@@ -47,17 +47,18 @@ export function OverallChart({ users, measurements }: Props) {
   );
 
   const chartConfig = chartData.reduce((acc, curr) => {
-    Object.keys(curr).forEach((key, index) => {
+    Object.keys(curr).forEach((key) => {
       if (key !== 'date') {
         acc[key] = {
           label: key.slice(0, 2),
-          color: `hsl(var(--chart-${index}))`,
+          color: `hsl(var(--color-${key.toLowerCase()}))`,
         };
       }
     });
 
     return acc;
   }, {} as ChartConfig);
+  console.log('chartConfig:', chartConfig);
 
   return (
     <Card>

@@ -36,11 +36,11 @@ export function PersonChart({ user }: Props) {
   const chartConfig: ChartConfig = {
     target: {
       label: 'Target',
-      color: 'hsl(var(--chart-4))',
+      color: 'hsl(var(--muted-foreground))',
     },
     [user.name]: {
       label: 'Actual',
-      color: 'hsl(var(--chart-1))',
+      color: `hsl(var(--color-${user.name.toLowerCase()}))`,
     },
   };
 

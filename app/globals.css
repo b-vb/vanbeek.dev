@@ -24,12 +24,12 @@
     --input: 0 0% 89.8%;
     --ring: 0 0% 3.9%;
     --radius: 0.5rem;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 300, 100%, 75%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --chart-6: 197 37% 24%;;
+    --color-cordelia: 12 76% 61%;
+    --color-bas: 173 58% 39%;
+    --color-marjolein: 300, 100%, 75%;
+    --color-bjorn: 212, 100%, 50%;
+    --color-jacqueline: 43 74% 66%;
+    --color-gerrit: 197 37% 24%;;
   }
 
   .dark {
