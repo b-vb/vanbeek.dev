@@ -2,12 +2,17 @@ import {
   Card, CardContent, CardHeader, CardTitle,
 } from '@/components/ui/card';
 import {
-  ArrowDownIcon, ArrowUpIcon, Target, Calendar, Scale,
+  Target,
+  Calendar,
+  Scale,
+  Flag,
+  TrendingUp,
+  TrendingDown,
 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { UserWithMeasurements } from '@/prisma/db';
-import { formatDate, targetWeightForDate } from '@/lib/utils';
+import { cn, formatDate, targetWeightForDate } from '@/lib/utils';
 import Image from 'next/image';
 
 const getAvatarUrl = (name: string) => {
@@ -65,34 +70,40 @@ export function Person({ user }: Props) {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <Scale className="w-4 h-4 text-muted-foreground" />
+          <div className="flex flex-col items-center gap-2">
+            <Flag className="w-5 h-5 text-muted-foreground" />
+            <span className="font-semibold">
+              {`${startWeight / 1000} kg`}
+            </span>
+          </div>
+          <div className="flex flex-col items-center gap-2">
+            <Scale className="w-5 h-5 text-muted-foreground" />
             <span className="font-semibold">
               {`${currentWeight / 1000} kg`}
             </span>
           </div>
-          <Badge variant={isOnTrackThisWeek ? 'default' : 'destructive'}>
-            {isOnTrackThisWeek ? 'On Track' : 'Needs Push'}
-          </Badge>
+          <div className="flex flex-col items-center gap-2">
+            <Target className="w-5 h-5 text-muted-foreground" />
+            <span className="font-semibold">
+              {`${goalWeight / 1000} kg`}
+            </span>
+          </div>
         </div>
 
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
-            <span>Progress to Goal</span>
+            <span>Progress to goal</span>
             <span>
-              {`${(remainingWeight / 1000).toFixed(1)} kg to go`}
+              {`${(remainingWeight / 1000).toFixed(1)} kg left`}
             </span>
           </div>
           <Progress value={progressPercentage} className="h-2" />
         </div>
 
         <div className="flex justify-between text-sm">
-          <div className="flex items-center gap-2">
-            <Target className="w-4 h-4 text-muted-foreground" />
-            <span>
-              {`Goal: ${goalWeight / 1000} kg`}
-            </span>
-          </div>
+          <Badge variant={isOnTrackThisWeek ? 'positive' : 'negative'}>
+            {isOnTrackThisWeek ? 'On Track' : 'Needs Push'}
+          </Badge>
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4 text-muted-foreground" />
             <span>
@@ -104,15 +115,15 @@ export function Person({ user }: Props) {
         <div className="flex justify-between text-sm">
           <div className="flex items-center gap-1">
             <span className="font-medium">Week:</span>
-            <span className={isOnTrackThisWeek ? 'text-green-500' : 'text-red-500'}>
-              {isOnTrackThisWeek ? <ArrowDownIcon className="inline w-4 h-4" /> : <ArrowUpIcon className="inline w-4 h-4" /> }
+            <span className={cn('flex items-center gap-1', isOnTrackThisWeek ? 'text-green-500' : 'text-red-500')}>
+              {isOnTrackThisWeek ? <TrendingDown className="inline w-4 h-4" /> : <TrendingUp className="inline w-4 h-4" /> }
               {`${Math.abs(weekLoss / 1000)} kg`}
             </span>
           </div>
           <div className="flex items-center gap-1">
             <span className="font-medium">Total:</span>
-            <span className={isOnTrack ? 'text-green-500' : 'text-red-500'}>
-              {isOnTrack ? <ArrowDownIcon className="inline w-4 h-4" /> : <ArrowUpIcon className="inline w-4 h-4" /> }
+            <span className={cn('flex items-center gap-1', isOnTrack ? 'text-green-500' : 'text-red-500')}>
+              {isOnTrack ? <TrendingDown className="inline w-4 h-4" /> : <TrendingUp className="inline w-4 h-4" /> }
               {`${Math.abs(currentLoss / 1000)} kg`}
             </span>
           </div>
