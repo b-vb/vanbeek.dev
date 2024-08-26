@@ -58,7 +58,6 @@ export function OverallChart({ users, measurements }: Props) {
 
     return acc;
   }, {} as ChartConfig);
-  console.log('chartConfig:', chartConfig);
 
   return (
     <Card>
