@@ -40,7 +40,7 @@ export async function addMeasurement(prevState: FormState, formData: FormData) {
     data: {
       measurements: {
         create: {
-          weight: parseInt(weight, 10) * 1000, // Convert to grams
+          weight: parseInt(weight, 10),
           date,
         },
       },

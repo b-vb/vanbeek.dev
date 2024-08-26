@@ -43,10 +43,10 @@ export default function AddMeasurementForm({ users }: Props) {
         </Select>
       </div>
       <div>
-        <label htmlFor="weight">New weight</label>
-        <Input name="weight" type="number" placeholder="82.5" step="0.1" />
+        <label htmlFor="weight">Weight</label>
+        <Input name="weight" type="number" placeholder="82500" step="1" />
         <div>
-          The weight should be in kilograms (kg).
+          The weight should be in grams.
         </div>
       </div>
       <div className="flex flex-col">
