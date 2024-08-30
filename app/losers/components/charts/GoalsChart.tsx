@@ -88,7 +88,9 @@ export function GoalsChart({ users, measurements }: Props) {
               axisLine={false}
               tickLine={false}
               tickMargin={20}
-              tickFormatter={(value: number) => `${value} %`}
+              domain={[0, 'dataMax']}
+              tickCount={15}
+              unit="%"
             />
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
             <ChartLegend content={<ChartLegendContent />} />

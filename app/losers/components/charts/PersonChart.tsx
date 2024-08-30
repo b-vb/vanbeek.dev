@@ -71,9 +71,14 @@ export function PersonChart({ user }: Props) {
               tickLine={false}
               tickMargin={10}
               domain={['dataMin', 'dataMax']}
-              tickFormatter={(value: number) => `${value} kg`}
+              tickCount={10}
+              unit="kg"
             />
-            <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+            <ChartTooltip
+              cursor={false}
+              content={(
+                <ChartTooltipContent hideLabel />)}
+            />
             <Line
               dataKey="target"
               type="linear"
