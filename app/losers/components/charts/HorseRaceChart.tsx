@@ -17,17 +17,36 @@ import {
 import {
   ChartConfig,
   ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
 } from '@/components/ui/chart';
 import { UserWithMeasurements } from '@/prisma/db';
+import { useState } from 'react';
+import { Switch } from '@/components/ui/switch';
 
 type Props = {
   users: UserWithMeasurements[];
 };
 
-export function HorseRaceChart({ users }: Props) {
-  const chartData = users.map((user) => {
+const getChartData = (users: UserWithMeasurements[], relative: boolean) => {
+  if (relative) {
+    const data = users.map((user) => {
+      const startWeight = user.measurements[0].weight;
+      const currentWeight = user.measurements[user.measurements.length - 1].weight;
+      const goalWeight = user.goal_weight;
+      const goalLoss = startWeight - goalWeight;
+      const currentLoss = startWeight - currentWeight;
+      const lossPercentage = (currentLoss / goalLoss) * 100;
+
+      return {
+        name: user.name,
+        loss: parseInt(lossPercentage.toFixed(1), 10),
+        fill: `var(--color-${user.name})`,
+      };
+    });
+
+    return data;
+  }
+
+  const data = users.map((user) => {
     const startWeight = user.measurements[0].weight;
     const currentWeight = user.measurements[user.measurements.length - 1].weight;
 
@@ -38,7 +57,13 @@ export function HorseRaceChart({ users }: Props) {
     };
   });
 
-  chartData.sort((a, b) => b.loss - a.loss);
+  return data;
+};
+
+export function HorseRaceChart({ users }: Props) {
+  const [relative, setRelative] = useState(false);
+
+  const chartData = getChartData(users, relative).sort((a, b) => b.loss - a.loss);
 
   const dynamicConfig = chartData.reduce((acc, user) => {
     acc[user.name] = {
@@ -52,8 +77,21 @@ export function HorseRaceChart({ users }: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg md:text-2xl">Horse race 🏇🏼</CardTitle>
+        <div className="flex justify-between items-center">
+          <CardTitle className="text-lg md:text-2xl">Horse race 🏇🏼</CardTitle>
+          <div className="flex gap-2">
+            <Switch
+              id="relative-toggle"
+              checked={relative}
+              onCheckedChange={setRelative}
+            />
+            <label htmlFor="relative-toggle">
+              {relative ? 'Relative' : 'Absolute'}
+            </label>
+          </div>
+        </div>
         <CardDescription>Who lost the most so far?</CardDescription>
+
       </CardHeader>
       <CardContent>
         <ChartContainer config={dynamicConfig}>
@@ -77,18 +115,16 @@ export function HorseRaceChart({ users }: Props) {
             <XAxis
               dataKey="loss"
               type="number"
-              label={{ value: 'Loss (kg)', position: 'insideBottom' }}
-              domain={[0, 11]}
-              ticks={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
+              unit={relative ? '%' : 'kg'}
             />
             <Bar
               dataKey="loss"
               layout="vertical"
               radius={5}
+              label={{
+                position: 'right',
+                formatter: (value: number) => `${value}${relative ? '%' : 'kg'}`,
+              }}
             />
           </BarChart>
         </ChartContainer>

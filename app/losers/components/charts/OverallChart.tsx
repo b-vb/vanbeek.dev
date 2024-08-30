@@ -71,7 +71,7 @@ export function OverallChart({ users, measurements }: Props) {
             accessibilityLayer
             data={chartData}
           >
-            <CartesianGrid vertical={false} />
+            <CartesianGrid />
             <XAxis
               dataKey="date"
               tickLine={false}
@@ -82,9 +82,10 @@ export function OverallChart({ users, measurements }: Props) {
             <YAxis
               axisLine={false}
               tickLine={false}
-              tickMargin={20}
+              tickMargin={15}
               domain={['dataMin', 'dataMax']}
-              tickFormatter={(value: number) => `${value} kg`}
+              tickCount={10}
+              unit="kg"
             />
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
             <ChartLegend content={<ChartLegendContent />} />
