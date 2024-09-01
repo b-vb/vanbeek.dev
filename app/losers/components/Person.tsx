@@ -54,6 +54,7 @@ export function Person({ user }: Props) {
   const targetWeight = targetWeightForDate(user, measurements[measurements.length - 1].date) / 1000;
   const isOnTrack = currentWeight <= startWeight;
   const isOnTrackThisWeek = (currentWeight / 1000) <= targetWeight;
+  const weekPositive = currentWeight <= previousWeight;
   const remainingWeight = Math.max(0, currentWeight - goalWeight);
 
   const avatarUrl = getAvatarUrl(user.name);
@@ -115,8 +116,8 @@ export function Person({ user }: Props) {
         <div className="flex justify-between text-sm">
           <div className="flex items-center gap-1">
             <span className="font-medium">Week:</span>
-            <span className={cn('flex items-center gap-1', isOnTrackThisWeek ? 'text-green-500' : 'text-red-500')}>
-              {isOnTrackThisWeek ? <TrendingDown className="inline w-4 h-4" /> : <TrendingUp className="inline w-4 h-4" /> }
+            <span className={cn('flex items-center gap-1', weekPositive ? 'text-green-500' : 'text-red-500')}>
+              {weekPositive ? <TrendingDown className="inline w-4 h-4" /> : <TrendingUp className="inline w-4 h-4" /> }
               {`${Math.abs(weekLoss / 1000)} kg`}
             </span>
           </div>
