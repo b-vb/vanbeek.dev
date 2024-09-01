@@ -29,7 +29,7 @@
     --color-marjolein: 300, 100%, 75%;
     --color-bjorn: 212, 100%, 50%;
     --color-jacqueline: 43 74% 66%;
-    --color-gerrit: 197 37% 24%;;
+    --color-gerrit: 197 37% 24%;
   }
 
   .dark {
@@ -52,11 +52,12 @@
     --border: 0 0% 14.9%;
     --input: 0 0% 14.9%;
     --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --color-cordelia: 28 100% 49.66%;
+    --color-bas: 173 100% 50%;
+    --color-marjolein: 300, 100%, 75%;
+    --color-bjorn: 212, 100%, 50%;
+    --color-jacqueline: 60 100% 50%;
+    --color-gerrit: 197 100% 48.27%;
   }
 }
 

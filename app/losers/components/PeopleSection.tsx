@@ -2,6 +2,7 @@ import {
   Card, CardContent, CardDescription, CardHeader, CardTitle,
 } from '@/components/ui/card';
 import { UserWithMeasurements } from '@/prisma/db';
+import { ThemeToggle } from '@/components/ui/theme-toggler';
 import { Person } from './Person';
 
 type Props = {
@@ -12,7 +13,10 @@ export function PeopleSection({ users }: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Weight Loss Leaderboard</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle>Weight Loss Leaderboard</CardTitle>
+          <ThemeToggle />
+        </div>
         <CardDescription>See who&apos;s crushing their goals!</CardDescription>
       </CardHeader>
       <CardContent>
