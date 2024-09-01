@@ -1,7 +1,7 @@
 'use server';
 
 import prisma from '@/prisma/db';
-import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
 const addMeasurementSchema = z.object({
@@ -47,5 +47,5 @@ export async function addMeasurement(prevState: FormState, formData: FormData) {
     },
   });
 
-  redirect('/losers');
+  revalidatePath('/losers');
 }
