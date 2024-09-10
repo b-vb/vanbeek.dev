@@ -101,6 +101,7 @@ export function GoalsChart({ users, measurements }: Props) {
                 type="monotone"
                 stroke={`var(--color-${user.name})`}
                 strokeWidth={2}
+                connectNulls
               />
             ))}
           </LineChart>
