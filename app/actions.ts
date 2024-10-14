@@ -20,32 +20,55 @@ const addMeasurementSchema = z.object({
     }).pipe(z.coerce.date()),
 });
 
-type FormState = {
-  message: string;
+export type FormState = {
+  status: 'success' | 'error' | 'initial';
+  error: string | null;
 };
 
 export async function addMeasurement(prevState: FormState, formData: FormData) {
-  const data = addMeasurementSchema.parse({
-    user: formData.get('user'),
-    weight: formData.get('weight'),
-    date: formData.get('date'),
-  });
+  try {
+    const data = addMeasurementSchema.parse({
+      user: formData.get('userId'),
+      weight: formData.get('weight'),
+      date: formData.get('date'),
+    });
 
-  const { user, weight, date } = data;
+    const { user, weight, date } = data;
 
-  await prisma.user.update({
-    where: {
-      id: user,
-    },
-    data: {
-      measurements: {
-        create: {
-          weight: parseInt(weight, 10),
-          date,
+    await prisma.user.update({
+      where: {
+        id: user,
+      },
+      data: {
+        measurements: {
+          create: {
+            weight: parseInt(weight, 10),
+            date,
+          },
         },
       },
-    },
-  });
+    });
 
-  revalidatePath('/losers');
+    revalidatePath('/losers');
+
+    return {
+      status: 'success',
+      error: null,
+    };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return {
+        status: 'error',
+        error: error.errors[0].message,
+      };
+    }
+
+    // eslint-disable-next-line no-console
+    console.error(formData, error);
+
+    return {
+      status: 'error',
+      error: 'An unknown error occurred, please contact support.',
+    };
+  }
 }
