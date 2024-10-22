@@ -42,11 +42,9 @@ type Props = {
   user: UserWithMeasurements;
 };
 
-const getDirectUrl = (name: string): URL => {
+const getDirectUrl = (name: string) => {
   const baseUrl = process.env.VERCEL_BRANCH_URL || process.env.NEXT_PUBLIC_BASE_URL;
-  console.log('baseUrl:', baseUrl);
-  const directUrl = new URL(`/losers/${name}`, baseUrl);
-  return directUrl;
+  return `${baseUrl}/losers/${name}`;
 };
 
 export function Person({ user }: Props) {
@@ -85,7 +83,7 @@ export function Person({ user }: Props) {
         <ShareButton shareData={{
           title: `Check out ${user.name}'s weight loss journey!`,
           text: `Check out ${user.name}'s weight loss journey!`,
-          url: directUrl.href,
+          url: directUrl,
         }}
         />
       </CardHeader>

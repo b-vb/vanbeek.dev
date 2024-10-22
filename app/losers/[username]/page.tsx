@@ -15,16 +15,14 @@ type PageProps = {
 
 export async function generateMetadata({ params: { username } }: PageProps): Promise<Metadata> {
   const baseUrl = process.env.VERCEL_BRANCH_URL || process.env.NEXT_PUBLIC_BASE_URL;
-  console.log('baseUrl in metadata:', baseUrl);
-  const ogImageUrl = new URL('/api/og', baseUrl);
-  ogImageUrl.searchParams.append('name', username);
+  const ogImageUrl = `${baseUrl}/api/og?name=${username}`;
 
   return {
     openGraph: {
       title: `${username}'s stats`,
       images: [
         {
-          url: ogImageUrl.href,
+          url: ogImageUrl,
           width: 1200,
           height: 630,
           alt: `Open Graph image ${username}'s weight loss journey`,
