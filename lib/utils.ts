@@ -40,3 +40,8 @@ export const percentageToGoal = (
 export type MeasurementChartPoint = {
   date: Date;
 } & Record<string, number | string>;
+
+export const calculateBMI = (
+  weightInKG: number,
+  height: number,
+) => weightInKG / (height / 100) ** 2;

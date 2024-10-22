@@ -1,0 +1,48 @@
+import prisma from '@/prisma/db';
+import { ImageResponse } from 'next/og';
+import { WeightLossOgImage } from '@/components/WeightLossOgImage';
+
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const name = searchParams.get('name');
+
+    if (!name) {
+      return new Response('Missing name parameter', { status: 400 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: {
+        // Capitalize the first letter of the name
+        name: name.charAt(0).toUpperCase() + name.slice(1),
+      },
+      include: {
+        measurements: {
+          orderBy: {
+            date: 'asc',
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      return new Response('User not found', { status: 404 });
+    }
+
+    return new ImageResponse(
+      (
+        <WeightLossOgImage user={user} />
+      ),
+      {
+        width: 1200,
+        height: 500,
+      },
+    );
+  } catch (error: any) {
+    // eslint-disable-next-line no-console
+    console.error(`Error generating image: ${error.message}`);
+    return new Response('Failed to generate the image', {
+      status: 500,
+    });
+  }
+}
