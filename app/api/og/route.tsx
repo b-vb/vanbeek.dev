@@ -37,8 +37,8 @@ export async function GET(request: NextRequest) {
         <WeightLossOgImage user={user} />
       ),
       {
-        width: 1200,
-        height: 500,
+        width: 400,
+        height: 300,
       },
     );
   } catch (error: any) {
