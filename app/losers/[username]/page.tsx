@@ -24,8 +24,8 @@ export async function generateMetadata({ params: { username } }: PageProps): Pro
       images: [
         {
           url: url.href,
-          width: 400,
-          height: 300,
+          width: 1200,
+          height: 500,
           alt: `Open Graph image ${username}'s weight loss journey`,
         },
       ],
