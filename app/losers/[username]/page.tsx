@@ -14,7 +14,8 @@ type PageProps = {
 };
 
 export async function generateMetadata({ params: { username } }: PageProps): Promise<Metadata> {
-  const ogImageUrl = new URL('/api/og', process.env.NEXT_PUBLIC_BASE_URL);
+  const baseUrl = process.env.VERCEL_BRANCH_URL || process.env.NEXT_PUBLIC_BASE_URL;
+  const ogImageUrl = new URL('/api/og', baseUrl);
   ogImageUrl.searchParams.append('name', username);
 
   return {
