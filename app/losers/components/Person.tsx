@@ -42,6 +42,8 @@ type Props = {
   user: UserWithMeasurements;
 };
 
+const baseUrl = process.env.VERCEL_BRANCH_URL || process.env.NEXT_PUBLIC_BASE_URL;
+
 export function Person({ user }: Props) {
   const { measurements } = user;
   const goalWeight = user.goal_weight;
@@ -60,7 +62,7 @@ export function Person({ user }: Props) {
   const remainingWeight = Math.max(0, currentWeight - goalWeight);
 
   const avatarUrl = getAvatarUrl(user.name);
-  const directUrl = new URL(`/losers/${user.name}`, process.env.NEXT_PUBLIC_BASE_URL);
+  const directUrl = new URL(`/losers/${user.name}`, baseUrl);
   return (
     <Card className="w-full">
       <CardHeader className="flex flex-row justify-between items-center">
