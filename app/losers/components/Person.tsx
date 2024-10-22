@@ -43,6 +43,7 @@ type Props = {
 };
 
 const baseUrl = process.env.VERCEL_BRANCH_URL || process.env.NEXT_PUBLIC_BASE_URL;
+console.log('baseUrl in person component:', baseUrl);
 
 export function Person({ user }: Props) {
   const { measurements } = user;

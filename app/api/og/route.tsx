@@ -1,10 +1,13 @@
 import prisma from '@/prisma/db';
 import { ImageResponse } from 'next/og';
 import { WeightLossOgImage } from '@/components/WeightLossOgImage';
+import { NextRequest } from 'next/server';
 
-export async function GET(request: Request) {
+export const dynamic = 'force-dynamic';
+
+export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = request.nextUrl;
     const name = searchParams.get('name');
 
     if (!name) {
