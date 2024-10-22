@@ -12,8 +12,12 @@ import {
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { UserWithMeasurements } from '@/prisma/db';
-import { cn, formatDate, targetWeightForDate } from '@/lib/utils';
+import {
+  calculateBMI, cn, formatDate, targetWeightForDate,
+} from '@/lib/utils';
 import Image from 'next/image';
+import { ShareButton } from '@/components/ShareButton';
+import Link from 'next/link';
 
 const getAvatarUrl = (name: string) => {
   switch (name.toLowerCase()) {
@@ -34,10 +38,13 @@ const getAvatarUrl = (name: string) => {
   }
 };
 
-const calculateBMI = (weightInKG: number, height: number) => weightInKG / (height / 100) ** 2;
-
 type Props = {
   user: UserWithMeasurements;
+};
+
+const getDirectUrl = (name: string) => {
+  const baseUrl = process.env.VERCEL_BRANCH_URL || process.env.NEXT_PUBLIC_BASE_URL;
+  return `${baseUrl}/losers/${name}`;
 };
 
 export function Person({ user }: Props) {
@@ -58,16 +65,27 @@ export function Person({ user }: Props) {
   const remainingWeight = Math.max(0, currentWeight - goalWeight);
 
   const avatarUrl = getAvatarUrl(user.name);
+  const directUrl = getDirectUrl(user.name);
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader className="flex flex-row items-center gap-4">
-        <Image width={64} height={64} src={avatarUrl} alt="" className="rounded-full w-16 h-16" />
-        <div>
-          <CardTitle>{user.name}</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            {`${user.height} cm | BMI ${bmi.toFixed(1)}`}
-          </p>
+    <Card className="w-full">
+      <CardHeader className="flex flex-row justify-between items-center">
+        <div className="flex flex-row items-center gap-4">
+          <Image width={64} height={64} src={avatarUrl} alt="" className="rounded-full w-16 h-16" />
+          <div>
+            <Link href={`/losers/${user.name}`}>
+              <CardTitle>{user.name}</CardTitle>
+            </Link>
+            <p className="text-sm text-muted-foreground">
+              {`${user.height} cm | BMI ${bmi.toFixed(1)}`}
+            </p>
+          </div>
         </div>
+        <ShareButton shareData={{
+          title: `Check out ${user.name}'s weight loss journey!`,
+          text: `Check out ${user.name}'s weight loss journey!`,
+          url: directUrl,
+        }}
+        />
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex justify-between items-center">
