@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
     );
   } catch (error: any) {
     // eslint-disable-next-line no-console
-    console.error(`Error generating image: ${error.message}`);
+    console.error(error);
     return new Response('Failed to generate the image', {
       status: 500,
     });
