@@ -37,13 +37,13 @@ export async function GET(request: NextRequest) {
         <WeightLossOgImage user={user} />
       ),
       {
-        width: 1200,
-        height: 500,
+        width: 400,
+        height: 300,
       },
     );
   } catch (error: any) {
     // eslint-disable-next-line no-console
-    console.error(`Error generating image: ${error.message}`);
+    console.error(error);
     return new Response('Failed to generate the image', {
       status: 500,
     });

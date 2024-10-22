@@ -43,8 +43,9 @@ type Props = {
 };
 
 const getDirectUrl = (name: string) => {
-  const baseUrl = process.env.VERCEL_BRANCH_URL || process.env.NEXT_PUBLIC_BASE_URL;
-  return `${baseUrl}/losers/${name}`;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  const url = new URL(`/losers/${name}`, baseUrl);
+  return url.href;
 };
 
 export function Person({ user }: Props) {
