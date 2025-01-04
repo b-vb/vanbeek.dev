@@ -31,8 +31,6 @@ export function PersonChart({ user }: Props) {
     target: (targetWeightForDate(user, measurement.date) / 1000).toFixed(1),
   }));
 
-  targetWeightForDate(user, user.measurements[2].date);
-
   const chartConfig: ChartConfig = {
     target: {
       label: 'Target',

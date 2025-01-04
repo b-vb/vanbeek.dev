@@ -12,7 +12,12 @@ import { HorseRaceChart } from './components/charts/HorseRaceChart';
 export const revalidate = 3600; // revalidate at most every hour
 
 export default async function Page() {
-  const users = await prisma.user.findMany({
+  const usersWithMeasurements = await prisma.user.findMany({
+    where: {
+      measurements: {
+        some: {}
+      }
+    },
     include: {
       measurements: {
         orderBy: {
@@ -24,6 +29,20 @@ export default async function Page() {
       name: 'asc',
     },
   });
+  
+  const allUsers = await prisma.user.findMany({
+    include: {
+      measurements: {
+        orderBy: {
+          date: 'asc',
+        },
+      },
+    },
+    orderBy: {
+      name: 'asc',
+    },
+  });
+
 
   const measurements = await prisma.measurement.findMany({
     include: {
@@ -37,7 +56,7 @@ export default async function Page() {
   return (
     <div className="w-full max-w-4xl mx-auto">
       <div className="flex flex-col gap-6">
-        <PeopleSection users={users} />
+        <PeopleSection users={usersWithMeasurements} />
 
         <Tabs defaultValue="overall">
           <TabsList className="flex flex-col h-auto">
@@ -47,7 +66,7 @@ export default async function Page() {
               <TabsTrigger value="goals">Goals</TabsTrigger>
             </div>
             <div>
-              {users.map((user) => (
+              {usersWithMeasurements.map((user) => (
                 <TabsTrigger key={user.id} value={user.name}>
                   {user.name.slice(0, 2)}
                 </TabsTrigger>
@@ -55,22 +74,22 @@ export default async function Page() {
             </div>
           </TabsList>
           <TabsContent value="overall">
-            <OverallChart users={users} measurements={measurements} />
+            <OverallChart users={usersWithMeasurements} measurements={measurements} />
           </TabsContent>
           <TabsContent value="horserace">
-            <HorseRaceChart users={users} />
+            <HorseRaceChart users={usersWithMeasurements} />
           </TabsContent>
           <TabsContent value="goals">
-            <GoalsChart users={users} measurements={measurements} />
+            <GoalsChart users={usersWithMeasurements} measurements={measurements} />
           </TabsContent>
-          {users.map((user) => (
+          {usersWithMeasurements.map((user) => (
             <TabsContent key={user.id} value={user.name}>
               <PersonChart user={user} />
             </TabsContent>
           ))}
         </Tabs>
 
-        <AddMeasurementDialog users={users} />
+        <AddMeasurementDialog users={allUsers} />
       </div>
     </div>
   );

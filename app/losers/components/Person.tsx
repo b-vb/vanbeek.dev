@@ -52,7 +52,7 @@ export function Person({ user }: Props) {
   const { measurements } = user;
   const goalWeight = user.goal_weight;
   const currentWeight = measurements[measurements.length - 1].weight;
-  const previousWeight = measurements[measurements.length - 2].weight;
+  const previousWeight = measurements[measurements.length - 2]?.weight ?? measurements[0].weight;
   const startWeight = measurements[0].weight;
   const weekLoss = Math.abs(currentWeight - previousWeight);
   const currentLoss = Math.abs(currentWeight - startWeight);

@@ -23,9 +23,9 @@ type Props = {
   closeDialog: () => void;
 };
 
-const getCurrentWeight = (userId: string, users: UserWithMeasurements[]): number => {
+const getCurrentWeight = (userId: string, users: UserWithMeasurements[]): number | undefined => {
   const user = users.find(({ id }) => id === userId);
-  return user!.measurements[user!.measurements.length - 1].weight;
+  return user && user.measurements.length > 0 ? user.measurements[user.measurements.length - 1].weight : undefined;
 };
 
 function Submit() {
@@ -49,8 +49,10 @@ export default function AddMeasurement({ users, closeDialog }: Props) {
   useEffect(() => {
     if (selectedUserId) {
       const currentWeight = getCurrentWeight(selectedUserId, users);
-      setWeight(currentWeight);
-      setLastWeight(currentWeight);
+      if (currentWeight) {
+        setWeight(currentWeight);
+        setLastWeight(currentWeight);
+      }
     }
   }, [selectedUserId, users]);
 
@@ -94,13 +96,13 @@ export default function AddMeasurement({ users, closeDialog }: Props) {
               <div>
                 <label htmlFor="weight" className="block text-sm font-medium mb-2">
                   Weight (grams)
-                  <span className={cn('ml-2', {
+                  {lastWeight !== 0 && (                  <span className={cn('ml-2', {
                     'text-green-500': weightChange < 0,
                     'text-red-500': weightChange > 0,
                   })}
                   >
                     {weightChangeText}
-                  </span>
+                  </span>)}
                 </label>
                 <div className="flex items-center space-x-2">
                   <Button
