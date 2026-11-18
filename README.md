@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# vanbeek.dev
 
-## Getting Started
+A single page: one link, one one-liner. Built with [TanStack Start](https://tanstack.com/start) and deployed to [Cloudflare Workers](https://developers.cloudflare.com/workers/).
 
-First, run the development server:
+## Development
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Type-check with `pnpm typecheck`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The site runs at http://localhost:3000.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Deploy
 
-## Learn More
+```bash
+pnpm dlx wrangler login   # once
+pnpm deploy
+```
 
-To learn more about Next.js, take a look at the following resources:
+This builds the app and publishes it as the `vanbeek-dev` Worker. To serve the real domain, add a custom domain (or route) for `vanbeek.dev` in the Cloudflare dashboard under the Worker's **Settings → Domains & Routes**.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- `src/routes/__root.tsx` — HTML shell, meta tags, 404 page
+- `src/routes/index.tsx` — the homepage
+- `src/styles/app.css` — all styles (plain CSS, no framework)
+- `wrangler.jsonc` — Cloudflare Worker config
+- `pnpm-workspace.yaml` — pnpm settings (allowlisted build scripts)

@@ -1,0 +1,10 @@
+allowBuilds:
+  esbuild: true
+  workerd: true
+
+# pnpm 12 enforces a minimum release age for new packages. These are the
+# current Cloudflare/Wrangler releases and were published inside that window.
+minimumReleaseAgeExclude:
+  - '@cloudflare/vite-plugin@1.70.0'
+  - miniflare@5.20261117.0-beta
+  - wrangler@4.164.0
